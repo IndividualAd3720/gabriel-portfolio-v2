@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Post — Gabriel Magan</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="../index.html" class="nav-logo">Gabriel<span>.</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../index.html#about">About</a></li>
+      <li><a href="../index.html#projects">Projects</a></li>
+      <li><a href="index.html">Blog</a></li>
+      <li><a href="../index.html#contact" class="nav-cta">Contact</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="shapes" style="position:fixed;inset:0;pointer-events:none;overflow:hidden">
+  <div class="shape shape-1"></div>
+  <div class="shape shape-2"></div>
+</div>
+
+<div class="post-container">
+  <div style="margin-bottom:32px">
+    <a href="index.html" style="font-size:0.85rem;color:var(--text-muted)">← Back to Blog</a>
+  </div>
+  <div id="postContent">
+    <p style="color:var(--text-muted)">Loading...</p>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <p>© 2026 Gabriel Luis A. Magan · <a href="../index.html">Back to Portfolio</a></p>
+  </div>
+</footer>
+
+<!-- marked.js for Markdown rendering -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+const navToggle = document.getElementById('navToggle');
+const navLinks = document.getElementById('navLinks');
+if (navToggle) navToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
+
+const params = new URLSearchParams(window.location.search);
+const slug = params.get('slug');
+
+if (!slug) {
+  document.getElementById('postContent').innerHTML = '<p style="color:var(--text-muted)">Post not found.</p>';
+} else {
+  fetch(`posts/${slug}.md`)
+    .then(r => {
+      if (!r.ok) throw new Error('not found');
+      return r.text();
+    })
+    .then(md => {
+      const html = marked.parse(md);
+      document.getElementById('postContent').innerHTML = `<div class="post-body">${html}</div>`;
+      // Set page title from first h1
+      const h1 = document.querySelector('.post-body h1');
+      if (h1) document.title = `${h1.textContent} — Gabriel Magan`;
+    })
+    .catch(() => {
+      document.getElementById('postContent').innerHTML = '<p style="color:var(--text-muted)">Post not found.</p>';
+    });
+}
+</script>
+</body>
+</html>

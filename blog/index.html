@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog — Gabriel Magan</title>
+  <meta name="description" content="Thoughts on automation, operations, career pivots, and life." />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="../index.html" class="nav-logo">Gabriel<span>.</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../index.html#about">About</a></li>
+      <li><a href="../index.html#experience">Experience</a></li>
+      <li><a href="../index.html#projects">Projects</a></li>
+      <li><a href="index.html" style="color:var(--accent)">Blog</a></li>
+      <li><a href="../index.html#contact" class="nav-cta">Contact</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="shapes" style="position:fixed;inset:0;pointer-events:none;overflow:hidden">
+  <div class="shape shape-1"></div>
+  <div class="shape shape-2"></div>
+</div>
+
+<div class="blog-page-hero">
+  <div class="container" style="text-align:center">
+    <p class="section-label">Writing</p>
+    <h1 class="section-title">Blog</h1>
+    <p class="section-sub" style="margin:0 auto">Automation, operations, career pivots, and lessons from an unconventional path.</p>
+  </div>
+</div>
+
+<div class="blog-list">
+  <div class="container">
+    <div class="blog-list-grid" id="blogList">
+      <div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px">Loading posts...</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <p>© 2026 Gabriel Luis A. Magan · <a href="../index.html">Back to Portfolio</a></p>
+  </div>
+</footer>
+
+<script>
+const navToggle = document.getElementById('navToggle');
+const navLinks = document.getElementById('navLinks');
+if (navToggle) navToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
+
+fetch('posts.json')
+  .then(r => r.json())
+  .then(posts => {
+    document.getElementById('blogList').innerHTML = posts.map(post => `
+      <a href="post.html?slug=${post.slug}" class="glass blog-card" style="display:block;text-decoration:none;color:inherit;opacity:0;transform:translateY(20px);transition:opacity 0.5s ease,transform 0.5s ease,background 0.3s ease,border-color 0.3s ease">
+        <div class="blog-meta">
+          <span class="blog-category">${post.category}</span>
+          <span class="blog-date">${post.date}</span>
+        </div>
+        <div class="blog-title">${post.title}</div>
+        <p class="blog-excerpt">${post.excerpt}</p>
+        <span class="blog-read-more">Read more →</span>
+      </a>
+    `).join('');
+
+    // Animate in
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.style.opacity = '1'; e.target.style.transform = 'translateY(0)'; }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.blog-card').forEach(el => obs.observe(el));
+  })
+  .catch(() => {
+    document.getElementById('blogList').innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--text-muted)">No posts yet.</p>';
+  });
+</script>
+</body>
+</html>
